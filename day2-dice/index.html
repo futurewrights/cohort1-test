@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Colorful Dice Roller</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 1rem;
+    }
+
+    .container {
+      background: white;
+      border-radius: 30px;
+      padding: 3rem 2rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 1rem;
+      font-size: 2.5rem;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .dice-display {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 25px;
+      padding: 3rem 2rem;
+      margin-bottom: 2rem;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .dice-display.rolling {
+      animation: shake 0.3s ease-in-out;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      25% { transform: translateX(-10px) rotate(-5deg); }
+      50% { transform: translateX(10px) rotate(5deg); }
+      75% { transform: translateX(-10px) rotate(-5deg); }
+    }
+
+    .dice-number {
+      font-size: 120px;
+      font-weight: bold;
+      color: white;
+      transition: all 0.4s ease;
+      line-height: 1;
+    }
+
+    .roll-button {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      border: none;
+      padding: 1rem 3rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 1.5rem;
+    }
+
+    .roll-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(245, 87, 108, 0.6);
+    }
+
+    .roll-button:active {
+      transform: translateY(-1px);
+    }
+
+    .roll-button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .result-text {
+      font-size: 1.1rem;
+      color: #666;
+      margin-top: 1rem;
+      font-weight: 500;
+    }
+
+    .emoji-faces {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .emoji-face {
+      font-size: 2.5rem;
+      opacity: 0.3;
+      transition: all 0.3s ease;
+    }
+
+    .emoji-face.active {
+      opacity: 1;
+      transform: scale(1.3);
+    }
+
+    .stats {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid #eee;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .stat-item {
+      padding: 1rem;
+      background: #f5f5f5;
+      border-radius: 15px;
+    }
+
+    .stat-label {
+      color: #999;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .reset-btn {
+      background: #ccc;
+      color: #333;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    .reset-btn:hover {
+      background: #999;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎲 Dice Roller</h1>
+    <p class="subtitle">Click the button to roll the dice!</p>
+
+    <div class="dice-display" id="diceDisplay">
+      <div class="dice-number" id="diceNumber">🎲</div>
+    </div>
+
+    <button class="roll-button" id="rollBtn" onclick="rollDice()">Roll Dice</button>
+
+    <div class="emoji-faces">
+      <span class="emoji-face" id="face1">🥌</span>
+      <span class="emoji-face" id="face2">🎯</span>
+      <span class="emoji-face" id="face3">⭐</span>
+      <span class="emoji-face" id="face4">💎</span>
+      <span class="emoji-face" id="face5">🔥</span>
+      <span class="emoji-face" id="face6">🚀</span>
+    </div>
+
+    <div class="result-text" id="resultText"></div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-label">Total Rolls</div>
+        <div class="stat-value" id="totalRolls">0</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Last Number</div>
+        <div class="stat-value" id="lastNumber">-</div>
+      </div>
+    </div>
+
+    <button class="reset-btn" onclick="resetStats()">Reset Stats</button>
+  </div>
+
+  <script>
+    let totalRolls = 0;
+    let lastNumber = 0;
+    const emojis = ['🥌', '🎯', '⭐', '💎', '🔥', '🚀'];
+    const numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣'];
+
+    function rollDice() {
+      const btn = document.getElementById('rollBtn');
+      const display = document.getElementById('diceDisplay');
+      const diceNum = document.getElementById('diceNumber');
+      const resultText = document.getElementById('resultText');
+      
+      btn.disabled = true;
+      display.classList.add('rolling');
+
+      // Simulate rolling animation
+      let rolls = 0;
+      const rollInterval = setInterval(() => {
+        const randomNum = Math.floor(Math.random() * 6);
+        diceNum.textContent = numbers[randomNum];
+        rolls++;
+        
+        if (rolls > 15) {
+          clearInterval(rollInterval);
+          
+          // Final result
+          lastNumber = Math.floor(Math.random() * 6) + 1;
+          diceNum.textContent = numbers[lastNumber - 1];
+          
+          // Update emoji highlight
+          updateEmojiFaces(lastNumber);
+          
+          // Update stats
+          totalRolls++;
+          document.getElementById('totalRolls').textContent = totalRolls;
+          document.getElementById('lastNumber').textContent = lastNumber;
+          
+          // Result message
+          const messages = [
+            `You rolled a ${lastNumber}! 🎉`,
+            `Lucky number ${lastNumber}! ✨`,
+            `That's a ${lastNumber}! Keep rolling! 🍀`,
+            `You got ${lastNumber}! Nice! 💫`,
+            `${lastNumber} is your number! 🌟`
+          ];
+          resultText.textContent = messages[Math.floor(Math.random() * messages.length)];
+          
+          display.classList.remove('rolling');
+          btn.disabled = false;
+        }
+      }, 50);
+    }
+
+    function updateEmojiFaces(num) {
+      document.querySelectorAll('.emoji-face').forEach((face, idx) => {
+        if (idx + 1 === num) {
+          face.classList.add('active');
+        } else {
+          face.classList.remove('active');
+        }
+      });
+    }
+
+    function resetStats() {
+      totalRolls = 0;
+      lastNumber = 0;
+      document.getElementById('totalRolls').textContent = '0';
+      document.getElementById('lastNumber').textContent = '-';
+      document.getElementById('diceNumber').textContent = '🎲';
+      document.getElementById('resultText').textContent = '';
+      document.querySelectorAll('.emoji-face').forEach(face => face.classList.remove('active'));
+    }
+  </script>
+</body>
+</html>
